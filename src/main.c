@@ -178,7 +178,7 @@ void freeHash(HashEntry *hash, int m) {
 }
 
 int add(HashEntry *hash, int n, int m, double lf, char *uname, int unameLen,
-        int shouldPrintHash) {
+        int shouldPrintHash, Mode mode) {
     int key;
     int i = 0;
     int inserted = 0;
@@ -187,14 +187,14 @@ int add(HashEntry *hash, int n, int m, double lf, char *uname, int unameLen,
     int h2Val;
     int exists = 0;
     key = strToNum(uname, unameLen);
-    // printf("add: key: %d\n", key);
     h1Val = h1(key, m);
-    // printf("add: h1Val: %d\n", h1Val);
     h2Val = h2(key, m);
-    // printf("add: h2Val: %d\n", h2Val);
+    if (mode == Debug) {
+        printf("h1(\"%s\") = %d\n", uname, h1Val);
+        printf("h2(\"%s\") = %d\n", uname, h2Val);
+    }
     while (inserted == 0 && exists == 0 && i < m) {
         hashIdx = compHashIdx(h1Val, h2Val, i, m);
-        // printf("add: hashIdx: %d\n", hashIdx);
         if (hash[hashIdx].userName == 0) {
             hash[hashIdx].userName = malloc((unameLen + 1) * sizeof(char));
             if (hash[hashIdx].userName == NULL) {
@@ -210,6 +210,9 @@ int add(HashEntry *hash, int n, int m, double lf, char *uname, int unameLen,
             strcmp(hash[hashIdx].userName, uname) == 0) {
             hash[hashIdx].deleted = 0;
             inserted = 1;
+        }
+        if (inserted == 0 && exists == 0 && mode == Debug) {
+            printf("%s kelimesi %d. adrese yerleştirilemedi\n", uname, hashIdx);
         }
         ++i;
     }
@@ -236,7 +239,7 @@ int add(HashEntry *hash, int n, int m, double lf, char *uname, int unameLen,
     return hashIdx;
 }
 
-void delete(HashEntry *hash, int n, int m, double lf) {
+void delete(HashEntry *hash, int n, int m, double lf, Mode mode) {
     int unameLen;
     char *uname = calloc(MAX_UNAME_BUF_LEN, sizeof(char));
     int h1Val;
@@ -259,12 +262,18 @@ void delete(HashEntry *hash, int n, int m, double lf) {
     key = strToNum(uname, unameLen);
     h1Val = h1(key, m);
     h2Val = h2(key, m);
+    if (mode == Debug) {
+        printf("h1(\"%s\") = %d\n", uname, h1Val);
+        printf("h2(\"%s\") = %d\n", uname, h2Val);
+    }
     while (deleted == 0 && i < m) {
         hashIdx = compHashIdx(h1Val, h2Val, i, m);
         if (hash[hashIdx].userName != 0 && hash[hashIdx].deleted == 0 &&
             strcmp(uname, hash[hashIdx].userName) == 0) {
             hash[hashIdx].deleted = 1;
             deleted = 1;
+        } else if (mode == Debug) {
+            printf("%s kelimesi %d. adresten silinemedi\n", uname, hashIdx);
         }
         ++i;
     }
@@ -278,7 +287,7 @@ void delete(HashEntry *hash, int n, int m, double lf) {
     free(uname);
 }
 
-void search(HashEntry *hash, int n, int m, double lf) {
+void search(HashEntry *hash, int n, int m, double lf, Mode mode) {
     int key;
     int h1Val;
     int h2Val;
@@ -301,11 +310,17 @@ void search(HashEntry *hash, int n, int m, double lf) {
     key = strToNum(uname, unameLen);
     h1Val = h1(key, m);
     h2Val = h2(key, m);
+    if (mode == Debug) {
+        printf("h1(\"%s\") = %d\n", uname, h1Val);
+        printf("h2(\"%s\") = %d\n", uname, h2Val);
+    }
     while (found == 0 && i < m) {
         hashIdx = compHashIdx(h1Val, h2Val, i, m);
         if (hash[hashIdx].userName != 0 && hash[hashIdx].deleted == 0 &&
             strcmp(hash[hashIdx].userName, uname) == 0) {
             found = 1;
+        } else if (mode == Debug) {
+            printf("%s kelimesi %d. adreste bulunamadı.\n", uname, hashIdx);
         }
         ++i;
     }
@@ -340,7 +355,7 @@ void testCompHashIdx() {
     assert(compHashIdx(h1(key, m), h2(key, m), i, m) == 3);
 }
 
-HashEntry *edit(HashEntry *hash, int n, int m, double lf) {
+HashEntry *edit(HashEntry *hash, int n, int m, double lf, Mode mode) {
     int i;
     HashEntry *newHash = calloc(m, sizeof(HashEntry));
     if (newHash == NULL) {
@@ -350,7 +365,7 @@ HashEntry *edit(HashEntry *hash, int n, int m, double lf) {
     for (i = 0; i < m; ++i) {
         if (hash[i].userName != 0 && hash[i].deleted == 0) {
             add(newHash, n, m, lf, hash[i].userName, strlen(hash[i].userName),
-                0);
+                0, mode);
         }
     }
     printf("Yeni hash tablosu:\n");
@@ -404,14 +419,14 @@ int main(int argc, char **argv) {
                 uname[MAX_UNAME_LEN] = 0;
                 unameLen = MAX_UNAME_LEN;
             }
-            add(hash, n, m, lf, uname, unameLen, 1);
+            add(hash, n, m, lf, uname, unameLen, 1, mode);
             free(uname);
         } else if (opId == 2) {
-            delete (hash, n, m, lf);
+            delete (hash, n, m, lf, mode);
         } else if (opId == 3) {
-            search(hash, n, m, lf);
+            search(hash, n, m, lf, mode);
         } else if (opId == 4) {
-            hash = edit(hash, n, m, lf);
+            hash = edit(hash, n, m, lf, mode);
         } else if (opId == 5) {
             printHash(hash, m);
         } else if (opId != 6) {
