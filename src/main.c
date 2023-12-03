@@ -83,19 +83,14 @@ double readLf() {
 int checkPrime(int num) {
     int i;
     int isPrime = 1;
-    // printf("checkPrime: called with num: %d\n", num);
     if (num <= 3) {
-        // printf("checkPrime: num (%d) <= 3\n", num);
         return 1;
     }
     for (i = 2; i * i <= num && isPrime == 1; ++i) {
-        // printf("checkPrime: i: %d\n", i);
         if (num % i == 0) {
-            // printf("checkPrime: i (%d) divides num (%d)\n", i, num);
             isPrime = 0;
         }
     }
-    // printf("checkPrime: isPrime: %d\n", isPrime);
     return isPrime;
 }
 
@@ -103,7 +98,6 @@ int compM(int n, double lf) {
     int quotient = (int)ceil(n / lf);
     int m;
     int isPrime = 0;
-    // printf("compM: quotient: %d\n", quotient);
     m = quotient - 1;
     while (isPrime == 0) {
         ++m;
@@ -133,11 +127,8 @@ int strToNum(char *str, int unameLen) {
         int power = unameLen - i - 1;
         double powerRes = pow(r, power);
         int charVal;
-        // printf("strToNum: powerRes: %lf\n", powerRes);
         charVal = str[i] - '0' + 1;
-        // printf("add: charVal: %d\n", charVal);
         num = num + powerRes * charVal;
-        // printf("strToNum: num: %lf\n", num);
     }
     while (num > INT_MAX) {
         num -= INT_MAX;
@@ -336,10 +327,7 @@ void testStrToNum() {
     char str[] = "tommy";
     int len = strlen(str);
     int num;
-    // printf("testStrToNum: sizeof(str): %ld\n", sizeof(str));
-    // printf("testStrToNum: m: %d, len: %d\n", m, len);
     num = strToNum(str, len);
-    // printf("testStrToNum: num: %d\n", num);
     assert(num == 8135);
 }
 
@@ -395,13 +383,9 @@ int main(int argc, char **argv) {
     testCheckPrime();
     testStrToNum();
     testCompHashIdx();
-    // printMode(mode);
     n = readN();
-    // printf("main: n: %d\n", n);
     lf = readLf();
-    // printf("main: lf: %lf\n", lf);
     m = compM(n, lf);
-    // printf("main: m: %d\n", m);
     hash = calloc(m, sizeof(HashEntry));
     if (hash == NULL) {
         printf("main: calloc failed\n");
