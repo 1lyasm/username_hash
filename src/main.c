@@ -135,7 +135,7 @@ int strToNum(char *str, int unameLen) {
         int charVal;
         // printf("strToNum: powerRes: %lf\n", powerRes);
         charVal = str[i] - '0' + 1;
-        // printf("execAdd: charVal: %d\n", charVal);
+        // printf("add: charVal: %d\n", charVal);
         num = num + powerRes * charVal;
         // printf("strToNum: num: %lf\n", num);
     }
@@ -177,8 +177,8 @@ void freeHash(HashEntry *hash, int m) {
     free(hash);
 }
 
-void execAdd(HashEntry *hash, int n, int m, double lf) {
-    // TODO test execAdd
+void add(HashEntry *hash, int n, int m, double lf) {
+    // TODO test add
     char *uname;
     int unameLen;
     int key;
@@ -189,31 +189,36 @@ void execAdd(HashEntry *hash, int n, int m, double lf) {
     int h2Val;
     uname = calloc(MAX_UNAME_BUF_LEN, sizeof(char));
     if (uname == NULL) {
-        printf("execAdd: malloc failed\n");
+        printf("add: calloc failed\n");
         exit(EXIT_FAILURE);
     }
-    // printf("execAdd: called\n");
+    // printf("add: called\n");
     printf("Yeni kullanıcı adını giriniz: ");
     scanf(" %s", uname);
     unameLen = strlen(uname);
-    // printf("execAdd: unameLen: %d\n", unameLen);
+    // printf("add: unameLen: %d\n", unameLen);
     if (unameLen >= MAX_UNAME_LEN) {
         uname[MAX_UNAME_LEN] = 0;
         unameLen = MAX_UNAME_LEN;
     }
-    // printf("execAdd: unameLen: %d\n", unameLen);
-    // printf("execAdd: uname: %s\n", uname);
+    // printf("add: unameLen: %d\n", unameLen);
+    // printf("add: uname: %s\n", uname);
     key = strToNum(uname, unameLen);
-    // printf("execAdd: key: %d\n", key);
+    // printf("add: key: %d\n", key);
     h1Val = h1(key, m);
-    // printf("execAdd: h1Val: %d\n", h1Val);
+    // printf("add: h1Val: %d\n", h1Val);
     h2Val = h2(key, m);
-    // printf("execAdd: h2Val: %d\n", h2Val);
+    // printf("add: h2Val: %d\n", h2Val);
     while (inserted == 0 && i < m) {
         hashIdx = compHashIdx(h1Val, h2Val, i, m);
-        // printf("execAdd: hashIdx: %d\n", hashIdx);
+        // printf("add: hashIdx: %d\n", hashIdx);
         if (hash[hashIdx].userName == 0) {
             hash[hashIdx].userName = uname;
+            inserted = 1;
+        }
+        if (hash[hashIdx].deleted == 1 &&
+            strcmp(hash[hashIdx].userName, uname) == 0) {
+            hash[hashIdx].deleted = 0;
             inserted = 1;
         }
         ++i;
@@ -229,12 +234,50 @@ void execAdd(HashEntry *hash, int n, int m, double lf) {
     }
 }
 
-void execDelete(HashEntry *hash, int n, int m, double lf) {
-    printf("execDelete: called\n");
+void delete(HashEntry *hash, int n, int m, double lf) {
+    int unameLen;
+    char *uname = calloc(MAX_UNAME_BUF_LEN, sizeof(char));
+    int h1Val;
+    int h2Val;
+    int deleted = 0;
+    int i = 0;
+    int hashIdx = 0;
+    int key;
+    if (uname == NULL) {
+        printf("delete: calloc failed\n");
+        exit(EXIT_FAILURE);
+    }
+    printf("Silinmesi istediğiniz kullanıcının adının giriniz: ");
+    scanf(" %s", uname);
+    unameLen = strlen(uname);
+    if (unameLen >= MAX_UNAME_LEN) {
+        uname[MAX_UNAME_LEN] = 0;
+        unameLen = MAX_UNAME_LEN;
+    }
+    key = strToNum(uname, unameLen);
+    h1Val = h1(key, m);
+    h2Val = h2(key, m);
+    while (deleted == 0 && i < m) {
+        hashIdx = compHashIdx(h1Val, h2Val, i, m);
+        if (hash[hashIdx].userName != 0 && hash[hashIdx].deleted == 0 &&
+            strcmp(uname, hash[hashIdx].userName) == 0) {
+            hash[hashIdx].deleted = 1;
+            deleted = 1;
+        }
+        ++i;
+    }
+    if (deleted == 1) {
+        printf("Kullanıcı %s %d.  indisten silindi\n", uname, hashIdx);
+        printHash(hash, m);
+    } else {
+        printf("Kullanıcı %s silinemedi, tabloda bulunamadı\n", uname);
+        printHash(hash, m);
+    }
+    free(uname);
 }
 
-void execSearch(HashEntry *hash, int n, int m, double lf) {
-    printf("execSearch: called\n");
+void search(HashEntry *hash, int n, int m, double lf) {
+    printf("search: called\n");
 }
 
 void testStrToNum() {
@@ -260,8 +303,8 @@ void testCompHashIdx() {
     assert(compHashIdx(h1(key, m), h2(key, m), i, m) == 3);
 }
 
-void execEdit(HashEntry *hash, int n, int m, double lf) {
-    printf("execEdit: called\n");
+void edit(HashEntry *hash, int n, int m, double lf) {
+    printf("edit: called\n");
 }
 
 int main(int argc, char **argv) {
@@ -297,13 +340,13 @@ int main(int argc, char **argv) {
         // printf("main: resp: %c\n", resp);
         opId = resp - '0';
         if (opId == 1) {
-            execAdd(hash, n, m, lf);
+            add(hash, n, m, lf);
         } else if (opId == 2) {
-            execDelete(hash, n, m, lf);
+            delete (hash, n, m, lf);
         } else if (opId == 3) {
-            execSearch(hash, n, m, lf);
+            search(hash, n, m, lf);
         } else if (opId == 4) {
-            execEdit(hash, n, m, lf);
+            edit(hash, n, m, lf);
         } else if (opId == 5) {
             printHash(hash, m);
         } else if (opId != 6) {
