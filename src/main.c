@@ -6,7 +6,8 @@
 #include <string.h>
 
 #define N_MODE 2
-#define MAX_UNAME_LEN 256
+#define MAX_UNAME_LEN 32
+#define MAX_UNAME_BUF_LEN 256
 
 typedef enum { Normal, Debug, Error } Mode;
 
@@ -67,7 +68,7 @@ int readN() {
     return n;
 }
 
-double readLF() {
+double readLf() {
     double lf;
     printf("Load factor değerini giriniz: ");
     scanf(" %lf", &lf);
@@ -119,25 +120,64 @@ void testCheckPrime() {
     assert(checkPrime(189) == 0);
 }
 
-int strToNum(char *str, int unameLen, int m) {
+int strToNum(char *str, int unameLen) {
     int num = 0;
     int i;
+    int r = 3;
     for (i = 0; i < unameLen; ++i) {
-        // TODO prevent overflow
         int power = unameLen - i - 1;
-        int powerRes = pow(m, power);
-        int charVal = str[i] - 'A' + 1;
-        // printf("strToNum: num: %d\n", num);
-        // printf("num += %d ^ %d * %d", m, power, charVal);
-        num = num + powerRes * charVal;
+        double powerRes = pow(r, power);
+        int charVal;
+        printf("strToNum: powerRes: %lf\n", powerRes);
+        charVal = str[i] - 'A' + 1;
+        printf("execAdd: charVal: %d\n", charVal);
+        num = num + (int)powerRes * charVal;
+        printf("strToNum: num: %d\n", num);
     }
     return num;
 }
 
-void execAdd(char **hash, int n, int m, int lf) {
-    char *uname = malloc(MAX_UNAME_LEN * sizeof(char));
+int h1(int key, int m) { return key % m; }
+
+int h2(int key, int m) {
+    int m2 = m - 2;
+    return 1 + (key % m2);
+}
+
+int compHashIdx(int h1Val, int h2Val, int i, int m) {
+    return (h1Val + i * h2Val) % m;
+}
+
+void printHash(char **hash, int m) {
+    int i;
+    printf("Hash tablosu:\n");
+    for (i = 0; i < m; ++i) {
+        if (hash[i] != 0) {
+            printf("\t%d:\t%s\n", i, hash[i]);
+        } else {
+            printf("\t%d:\t(null)\n", i);
+        }
+    }
+}
+
+void freeHash(char **hash, int m) {
+    int i;
+    for (i = 0; i < m; ++i) {
+        free(hash[i]);
+    }
+    free(hash);
+}
+
+void execAdd(char **hash, int n, int m, double lf) {
+    char *uname;
     int unameLen;
     int key;
+    int i = 0;
+    int inserted = 0;
+    int hashIdx;
+    int h1Val;
+    int h2Val;
+    uname = calloc(MAX_UNAME_BUF_LEN, sizeof(char));
     if (uname == NULL) {
         printf("execAdd: malloc failed\n");
         exit(EXIT_FAILURE);
@@ -146,30 +186,70 @@ void execAdd(char **hash, int n, int m, int lf) {
     printf("Yeni kullanıcı adını giriniz: ");
     scanf(" %s", uname);
     unameLen = strlen(uname);
+    if (unameLen >= MAX_UNAME_LEN) {
+        uname[MAX_UNAME_LEN - 1] = 0;
+        unameLen = MAX_UNAME_LEN;
+    }
+    printf("execAdd: unameLen: %d\n", unameLen);
     printf("execAdd: uname: %s\n", uname);
-    key = strToNum(uname, unameLen, m);
+    key = strToNum(uname, unameLen);
     printf("execAdd: key: %d\n", key);
-    free(uname);
+    h1Val = h1(key, m);
+    printf("execAdd: h1Val: %d\n", h1Val);
+    h2Val = h2(key, m);
+    printf("execAdd: h2Val: %d\n", h2Val);
+    while (inserted == 0 && i < m) {
+        hashIdx = compHashIdx(h1Val, h2Val, i, m);
+        printf("execAdd: hashIdx: %d\n", hashIdx);
+        if (hash[hashIdx] == 0) {
+            hash[hashIdx] = uname;
+            inserted = 1;
+        }
+        ++i;
+    }
+    if (inserted == 1) {
+        printf("Kullanıcı %s %d. indise yerleştirildi\n", uname, hashIdx);
+        printHash(hash, m);
+    } else {
+        printf("Kullanıcı %s tabloya yerleştirilemedi, tabloda boş yer yok\n",
+               uname);
+        printHash(hash, m);
+    }
 }
 
-void execDelete(char **hash, int n, int m, int lf) {
+void execDelete(char **hash, int n, int m, double lf) {
     printf("execDelete: called\n");
 }
 
-void execSearch(char **hash, int n, int m, int lf) {
+void execSearch(char **hash, int n, int m, double lf) {
     printf("execSearch: called\n");
 }
 
 void testStrToNum() {
     char str[] = "tommy";
     int len = strlen(str);
-    int m = 7;
     int num;
     // printf("testStrToNum: sizeof(str): %ld\n", sizeof(str));
     // printf("testStrToNum: m: %d, len: %d\n", m, len);
-    num = strToNum(str, len, m);
+    num = strToNum(str, len);
     // printf("testStrToNum: num: %d\n", num);
     assert(num == 143550);
+}
+
+void testCompHashIdx() {
+    int key, i, m;
+    key = 39782;
+    i = 0;
+    m = 5;
+    assert(compHashIdx(h1(key, m), h2(key, m), i, m) == 2);
+    i = 1;
+    assert(compHashIdx(h1(key, m), h2(key, m), i, m) == 0);
+    i = 2;
+    assert(compHashIdx(h1(key, m), h2(key, m), i, m) == 3);
+}
+
+void execEdit(char **hash, int n, int m, double lf) {
+    printf("execEdit: called\n");
 }
 
 int main(int argc, char **argv) {
@@ -180,11 +260,12 @@ int main(int argc, char **argv) {
     char resp;
     char **hash;
     testCheckPrime();
-    testStrToNum();
+    // testStrToNum();
+    testCompHashIdx();
     printMode(mode);
     n = readN();
     printf("main: n: %d\n", n);
-    lf = readLF();
+    lf = readLf();
     printf("main: lf: %lf\n", lf);
     m = compM(n, lf);
     printf("main: m: %d\n", m);
@@ -195,7 +276,9 @@ int main(int argc, char **argv) {
     }
     do {
         int opId;
-        printf("\n\t1. Ekleme\n\t2. Silme\n\t3. Arama\n\n");
+        printf(
+            "\n\t1. Ekleme\n\t2. Silme\n\t3. Arama\n\t4. Düzenle\n\t5. "
+            "Çıkış\n\n");
         printf("İşlem: ");
         scanf(" %c", &resp);
         printf("main: resp: %c\n", resp);
@@ -206,10 +289,12 @@ int main(int argc, char **argv) {
             execDelete(hash, n, m, lf);
         } else if (opId == 3) {
             execSearch(hash, n, m, lf);
-        } else {
+        } else if (opId == 4) {
+            execEdit(hash, n, m, lf);
+        } else if (opId != 5) {
             printf("Geçersiz operasyon, yeniden deneyin\n");
         }
-    } while (resp != 'q');
-    free(hash);
+    } while (resp != '5');
+    freeHash(hash, m);
     return 0;
 }
