@@ -228,11 +228,10 @@ void add(HashEntry *hash, int n, int m, double lf) {
         ++i;
     }
     if (inserted == 1) {
-        printf("Kullanıcı %s %d. indise yerleştirildi\n", uname, hashIdx);
+        printf("Elemanınız %d. adrese yerleştirildi.\n", hashIdx);
         printHash(hash, m);
     } else {
-        printf("Kullanıcı %s tabloya yerleştirilemedi, tabloda boş yer yok\n",
-               uname);
+        printf("Eleman tabloda mevcut olduğu için ekleme işlemi yapılmadı\n");
         printHash(hash, m);
     }
     free(uname);
@@ -271,17 +270,51 @@ void delete(HashEntry *hash, int n, int m, double lf) {
         ++i;
     }
     if (deleted == 1) {
-        printf("Kullanıcı %s %d.  indisten silindi\n", uname, hashIdx);
+        printf("%d adresindeki %s elemanı silindi.\n", hashIdx, uname);
         printHash(hash, m);
     } else {
-        printf("Kullanıcı %s silinemedi, tabloda bulunamadı\n", uname);
+        printf("%s elemanı tabloda bulunmuyor\n", uname);
         printHash(hash, m);
     }
     free(uname);
 }
 
 void search(HashEntry *hash, int n, int m, double lf) {
-    printf("search: called\n");
+    int key;
+    int h1Val;
+    int h2Val;
+    int found = 0;
+    int i = 0;
+    int unameLen;
+    int hashIdx;
+    char *uname = calloc(MAX_UNAME_BUF_LEN, sizeof(char));
+    if (uname == NULL) {
+        printf("search: calloc failed\n");
+        exit(EXIT_FAILURE);
+    }
+    printf("Aramak istediğiniz kullanıcıyı giriniz: ");
+    scanf(" %s", uname);
+    unameLen = strlen(uname);
+    if (unameLen >= MAX_UNAME_LEN) {
+        uname[MAX_UNAME_LEN] = 0;
+        unameLen = MAX_UNAME_LEN;
+    }
+    key = strToNum(uname, unameLen);
+    h1Val = h1(key, m);
+    h2Val = h2(key, m);
+    while (found == 0 && i < m) {
+        hashIdx = compHashIdx(h1Val, h2Val, i, m);
+        if (hash[hashIdx].userName != 0 && hash[hashIdx].deleted == 0 &&
+            strcmp(hash[hashIdx].userName, uname) == 0) {
+            found = 1;
+        }
+        ++i;
+    }
+    if (found == 1) {
+        printf("%s elemanı %d adresinde bulunmaktadır.\n", uname, hashIdx);
+    } else {
+        printf("%s elemanı tabloda bulunamadı.\n", uname);
+    }
 }
 
 void testStrToNum() {
@@ -312,6 +345,7 @@ void edit(HashEntry *hash, int n, int m, double lf) {
 }
 
 int main(int argc, char **argv) {
+    // TODO correct messages
     Mode mode = parseArgs(argc, argv);
     int n;
     double lf;
