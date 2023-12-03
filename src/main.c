@@ -178,7 +178,6 @@ void freeHash(HashEntry *hash, int m) {
 }
 
 void add(HashEntry *hash, int n, int m, double lf) {
-    // TODO test add
     char *uname;
     int unameLen;
     int key;
@@ -213,7 +212,12 @@ void add(HashEntry *hash, int n, int m, double lf) {
         hashIdx = compHashIdx(h1Val, h2Val, i, m);
         // printf("add: hashIdx: %d\n", hashIdx);
         if (hash[hashIdx].userName == 0) {
-            hash[hashIdx].userName = uname;
+            hash[hashIdx].userName = malloc((unameLen + 1) * sizeof(char));
+            if (hash[hashIdx].userName == NULL) {
+                printf("add: malloc failed\n");
+                exit(EXIT_FAILURE);
+            }
+            strcpy(hash[hashIdx].userName, uname);
             inserted = 1;
         }
         if (hash[hashIdx].deleted == 1 &&
@@ -230,8 +234,8 @@ void add(HashEntry *hash, int n, int m, double lf) {
         printf("Kullanıcı %s tabloya yerleştirilemedi, tabloda boş yer yok\n",
                uname);
         printHash(hash, m);
-        free(uname);
     }
+    free(uname);
 }
 
 void delete(HashEntry *hash, int n, int m, double lf) {
