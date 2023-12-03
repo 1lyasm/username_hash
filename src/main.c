@@ -128,11 +128,11 @@ int strToNum(char *str, int unameLen) {
         int power = unameLen - i - 1;
         double powerRes = pow(r, power);
         int charVal;
-        printf("strToNum: powerRes: %lf\n", powerRes);
+        // printf("strToNum: powerRes: %lf\n", powerRes);
         charVal = str[i] - '0' + 1;
-        printf("execAdd: charVal: %d\n", charVal);
+        // printf("execAdd: charVal: %d\n", charVal);
         num = num + powerRes * charVal;
-        printf("strToNum: num: %lf\n", num);
+        // printf("strToNum: num: %lf\n", num);
     }
     while (num > INT_MAX) {
         num -= INT_MAX;
@@ -219,6 +219,7 @@ void execAdd(char **hash, int n, int m, double lf) {
         printf("Kullanıcı %s tabloya yerleştirilemedi, tabloda boş yer yok\n",
                uname);
         printHash(hash, m);
+        free(uname);
     }
 }
 
