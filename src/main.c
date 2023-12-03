@@ -177,31 +177,14 @@ void freeHash(HashEntry *hash, int m) {
     free(hash);
 }
 
-void add(HashEntry *hash, int n, int m, double lf) {
-    char *uname;
-    int unameLen;
+int add(HashEntry *hash, int n, int m, double lf, char *uname, int unameLen,
+        int shouldPrintHash) {
     int key;
     int i = 0;
     int inserted = 0;
     int hashIdx;
     int h1Val;
     int h2Val;
-    uname = calloc(MAX_UNAME_BUF_LEN, sizeof(char));
-    if (uname == NULL) {
-        printf("add: calloc failed\n");
-        exit(EXIT_FAILURE);
-    }
-    // printf("add: called\n");
-    printf("Yeni kullanıcı adını giriniz: ");
-    scanf(" %s", uname);
-    unameLen = strlen(uname);
-    // printf("add: unameLen: %d\n", unameLen);
-    if (unameLen >= MAX_UNAME_LEN) {
-        uname[MAX_UNAME_LEN] = 0;
-        unameLen = MAX_UNAME_LEN;
-    }
-    // printf("add: unameLen: %d\n", unameLen);
-    // printf("add: uname: %s\n", uname);
     key = strToNum(uname, unameLen);
     // printf("add: key: %d\n", key);
     h1Val = h1(key, m);
@@ -228,13 +211,19 @@ void add(HashEntry *hash, int n, int m, double lf) {
         ++i;
     }
     if (inserted == 1) {
-        printf("Elemanınız %d. adrese yerleştirildi.\n", hashIdx);
-        printHash(hash, m);
+        printf("Elemanınız (%s) %d. adrese yerleştirildi.\n", uname, hashIdx);
+        if (shouldPrintHash) {
+            printHash(hash, m);
+        }
     } else {
         printf("Eleman tabloda mevcut olduğu için ekleme işlemi yapılmadı\n");
+        if (shouldPrintHash) {
+            printHash(hash, m);
+        }
         printHash(hash, m);
+        hashIdx = -1;
     }
-    free(uname);
+    return hashIdx;
 }
 
 void delete(HashEntry *hash, int n, int m, double lf) {
@@ -315,6 +304,7 @@ void search(HashEntry *hash, int n, int m, double lf) {
     } else {
         printf("%s elemanı tabloda bulunamadı.\n", uname);
     }
+    free(uname);
 }
 
 void testStrToNum() {
@@ -340,8 +330,23 @@ void testCompHashIdx() {
     assert(compHashIdx(h1(key, m), h2(key, m), i, m) == 3);
 }
 
-void edit(HashEntry *hash, int n, int m, double lf) {
-    printf("edit: called\n");
+HashEntry *edit(HashEntry *hash, int n, int m, double lf) {
+    int i;
+    HashEntry *newHash = calloc(m, sizeof(HashEntry));
+    if (newHash == NULL) {
+        printf("edit: calloc failed\n");
+        exit(EXIT_FAILURE);
+    }
+    for (i = 0; i < m; ++i) {
+        if (hash[i].userName != 0 && hash[i].deleted == 0) {
+            add(newHash, n, m, lf, hash[i].userName, strlen(hash[i].userName),
+                0);
+        }
+    }
+    printf("Yeni hash tablosu:\n");
+    printHash(newHash, m);
+    freeHash(hash, m);
+    return newHash;
 }
 
 int main(int argc, char **argv) {
@@ -363,7 +368,7 @@ int main(int argc, char **argv) {
     // printf("main: m: %d\n", m);
     hash = calloc(m, sizeof(HashEntry));
     if (hash == NULL) {
-        printf("main: malloc failed\n");
+        printf("main: calloc failed\n");
         exit(EXIT_FAILURE);
     }
     do {
@@ -374,16 +379,29 @@ int main(int argc, char **argv) {
             "Çıkış\n\n");
         printf("İşlem: ");
         scanf(" %c", &resp);
-        // printf("main: resp: %c\n", resp);
         opId = resp - '0';
         if (opId == 1) {
-            add(hash, n, m, lf);
+            int unameLen;
+            char *uname = calloc(MAX_UNAME_BUF_LEN, sizeof(char));
+            if (uname == NULL) {
+                printf("add: calloc failed\n");
+                exit(EXIT_FAILURE);
+            }
+            printf("Yeni kullanıcı adını giriniz: ");
+            scanf(" %s", uname);
+            unameLen = strlen(uname);
+            if (unameLen >= MAX_UNAME_LEN) {
+                uname[MAX_UNAME_LEN] = 0;
+                unameLen = MAX_UNAME_LEN;
+            }
+            add(hash, n, m, lf, uname, unameLen, 1);
+            free(uname);
         } else if (opId == 2) {
             delete (hash, n, m, lf);
         } else if (opId == 3) {
             search(hash, n, m, lf);
         } else if (opId == 4) {
-            edit(hash, n, m, lf);
+            hash = edit(hash, n, m, lf);
         } else if (opId == 5) {
             printHash(hash, m);
         } else if (opId != 6) {
