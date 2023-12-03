@@ -121,7 +121,7 @@ void testCheckPrime() {
 }
 
 int strToNum(char *str, int unameLen) {
-    int num = 0;
+    double num = 0;
     int i;
     int r = 3;
     for (i = 0; i < unameLen; ++i) {
@@ -129,12 +129,15 @@ int strToNum(char *str, int unameLen) {
         double powerRes = pow(r, power);
         int charVal;
         printf("strToNum: powerRes: %lf\n", powerRes);
-        charVal = str[i] - 'A' + 1;
+        charVal = str[i] - '0' + 1;
         printf("execAdd: charVal: %d\n", charVal);
-        num = num + (int)powerRes * charVal;
-        printf("strToNum: num: %d\n", num);
+        num = num + powerRes * charVal;
+        printf("strToNum: num: %lf\n", num);
     }
-    return num;
+    while (num > INT_MAX) {
+        num -= INT_MAX;
+    }
+    return (int)num;
 }
 
 int h1(int key, int m) { return key % m; }
@@ -169,6 +172,7 @@ void freeHash(char **hash, int m) {
 }
 
 void execAdd(char **hash, int n, int m, double lf) {
+    // TODO test execAdd
     char *uname;
     int unameLen;
     int key;
@@ -186,8 +190,9 @@ void execAdd(char **hash, int n, int m, double lf) {
     printf("Yeni kullanıcı adını giriniz: ");
     scanf(" %s", uname);
     unameLen = strlen(uname);
+    printf("execAdd: unameLen: %d\n", unameLen);
     if (unameLen >= MAX_UNAME_LEN) {
-        uname[MAX_UNAME_LEN - 1] = 0;
+        uname[MAX_UNAME_LEN] = 0;
         unameLen = MAX_UNAME_LEN;
     }
     printf("execAdd: unameLen: %d\n", unameLen);
@@ -233,7 +238,7 @@ void testStrToNum() {
     // printf("testStrToNum: m: %d, len: %d\n", m, len);
     num = strToNum(str, len);
     // printf("testStrToNum: num: %d\n", num);
-    assert(num == 143550);
+    assert(num == 8135);
 }
 
 void testCompHashIdx() {
@@ -260,7 +265,7 @@ int main(int argc, char **argv) {
     char resp;
     char **hash;
     testCheckPrime();
-    // testStrToNum();
+    testStrToNum();
     testCompHashIdx();
     printMode(mode);
     n = readN();
