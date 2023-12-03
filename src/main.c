@@ -345,7 +345,6 @@ void edit(HashEntry *hash, int n, int m, double lf) {
 }
 
 int main(int argc, char **argv) {
-    // TODO correct messages
     Mode mode = parseArgs(argc, argv);
     int n;
     double lf;
