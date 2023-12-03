@@ -161,7 +161,8 @@ void printHash(HashEntry *hash, int m) {
     printf("\nHash tablosu:\n");
     for (i = 0; i < m; ++i) {
         if (hash[i].userName != 0) {
-            printf("\t%d:\t%s\n", i, hash[i].userName);
+            printf("\t%d:\t%s (deleted: %d)\n", i, hash[i].userName,
+                   hash[i].deleted);
         } else {
             printf("\t%d:\t(null)\n", i);
         }
