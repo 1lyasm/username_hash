@@ -185,13 +185,14 @@ int add(HashEntry *hash, int n, int m, double lf, char *uname, int unameLen,
     int hashIdx;
     int h1Val;
     int h2Val;
+    int exists = 0;
     key = strToNum(uname, unameLen);
     // printf("add: key: %d\n", key);
     h1Val = h1(key, m);
     // printf("add: h1Val: %d\n", h1Val);
     h2Val = h2(key, m);
     // printf("add: h2Val: %d\n", h2Val);
-    while (inserted == 0 && i < m) {
+    while (inserted == 0 && exists == 0 && i < m) {
         hashIdx = compHashIdx(h1Val, h2Val, i, m);
         // printf("add: hashIdx: %d\n", hashIdx);
         if (hash[hashIdx].userName == 0) {
@@ -202,6 +203,8 @@ int add(HashEntry *hash, int n, int m, double lf, char *uname, int unameLen,
             }
             strcpy(hash[hashIdx].userName, uname);
             inserted = 1;
+        } else if (strcmp(hash[hashIdx].userName, uname) == 0) {
+            exists = 1;
         }
         if (hash[hashIdx].deleted == 1 &&
             strcmp(hash[hashIdx].userName, uname) == 0) {
@@ -215,11 +218,18 @@ int add(HashEntry *hash, int n, int m, double lf, char *uname, int unameLen,
         if (shouldPrintHash) {
             printHash(hash, m);
         }
-    } else {
-        printf("Eleman tabloda mevcut olduğu için ekleme işlemi yapılmadı\n");
+    } else if (exists == 1) {
+        printf(
+            "Eleman (%s) tabloda mevcut olduğu için ekleme işlemi yapılmadı\n",
+            uname);
         if (shouldPrintHash) {
             printHash(hash, m);
         }
+        printHash(hash, m);
+        hashIdx = -1;
+    } else {
+        printf("Tablo dolu olduğu için %s elemanı tabloya yerleştirilemedi.\n",
+               uname);
         printHash(hash, m);
         hashIdx = -1;
     }
