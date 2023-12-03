@@ -5,6 +5,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+/*
+    In this document, there is the solution for the homework 3.
+    This documents implements a CLI for a hash table and implements
+    hashing related functions such as add, delete, and search. User
+    can add, delete, edit, and search from the hash table by
+    answering prompts from the CLI.
+*/
+
 #define N_MODE 2
 #define MAX_UNAME_LEN 32
 #define MAX_UNAME_BUF_LEN 256
@@ -16,6 +24,13 @@ typedef struct {
     int deleted;
 } HashEntry;
 
+/*
+ @brief Prints current configured mode
+
+ @param mode Mode enum variable to be used for printing
+
+ @return
+*/
 void printMode(Mode mode) {
     char *asStr = "error";
     if (mode == Normal) {
