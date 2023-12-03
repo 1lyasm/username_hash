@@ -11,6 +11,11 @@
 
 typedef enum { Normal, Debug, Error } Mode;
 
+typedef struct {
+    char *userName;
+    int deleted;
+} HashEntry;
+
 void printMode(Mode mode) {
     char *asStr = "error";
     if (mode == Normal) {
@@ -98,7 +103,7 @@ int compM(int n, double lf) {
     int quotient = (int)ceil(n / lf);
     int m;
     int isPrime = 0;
-    printf("compM: quotient: %d\n", quotient);
+    // printf("compM: quotient: %d\n", quotient);
     m = quotient - 1;
     while (isPrime == 0) {
         ++m;
@@ -151,27 +156,27 @@ int compHashIdx(int h1Val, int h2Val, int i, int m) {
     return (h1Val + i * h2Val) % m;
 }
 
-void printHash(char **hash, int m) {
+void printHash(HashEntry *hash, int m) {
     int i;
-    printf("Hash tablosu:\n");
+    printf("\nHash tablosu:\n");
     for (i = 0; i < m; ++i) {
-        if (hash[i] != 0) {
-            printf("\t%d:\t%s\n", i, hash[i]);
+        if (hash[i].userName != 0) {
+            printf("\t%d:\t%s\n", i, hash[i].userName);
         } else {
             printf("\t%d:\t(null)\n", i);
         }
     }
 }
 
-void freeHash(char **hash, int m) {
+void freeHash(HashEntry *hash, int m) {
     int i;
     for (i = 0; i < m; ++i) {
-        free(hash[i]);
+        free(hash[i].userName);
     }
     free(hash);
 }
 
-void execAdd(char **hash, int n, int m, double lf) {
+void execAdd(HashEntry *hash, int n, int m, double lf) {
     // TODO test execAdd
     char *uname;
     int unameLen;
@@ -186,28 +191,28 @@ void execAdd(char **hash, int n, int m, double lf) {
         printf("execAdd: malloc failed\n");
         exit(EXIT_FAILURE);
     }
-    printf("execAdd: called\n");
+    // printf("execAdd: called\n");
     printf("Yeni kullanıcı adını giriniz: ");
     scanf(" %s", uname);
     unameLen = strlen(uname);
-    printf("execAdd: unameLen: %d\n", unameLen);
+    // printf("execAdd: unameLen: %d\n", unameLen);
     if (unameLen >= MAX_UNAME_LEN) {
         uname[MAX_UNAME_LEN] = 0;
         unameLen = MAX_UNAME_LEN;
     }
-    printf("execAdd: unameLen: %d\n", unameLen);
-    printf("execAdd: uname: %s\n", uname);
+    // printf("execAdd: unameLen: %d\n", unameLen);
+    // printf("execAdd: uname: %s\n", uname);
     key = strToNum(uname, unameLen);
-    printf("execAdd: key: %d\n", key);
+    // printf("execAdd: key: %d\n", key);
     h1Val = h1(key, m);
-    printf("execAdd: h1Val: %d\n", h1Val);
+    // printf("execAdd: h1Val: %d\n", h1Val);
     h2Val = h2(key, m);
-    printf("execAdd: h2Val: %d\n", h2Val);
+    // printf("execAdd: h2Val: %d\n", h2Val);
     while (inserted == 0 && i < m) {
         hashIdx = compHashIdx(h1Val, h2Val, i, m);
-        printf("execAdd: hashIdx: %d\n", hashIdx);
-        if (hash[hashIdx] == 0) {
-            hash[hashIdx] = uname;
+        // printf("execAdd: hashIdx: %d\n", hashIdx);
+        if (hash[hashIdx].userName == 0) {
+            hash[hashIdx].userName = uname;
             inserted = 1;
         }
         ++i;
@@ -223,11 +228,11 @@ void execAdd(char **hash, int n, int m, double lf) {
     }
 }
 
-void execDelete(char **hash, int n, int m, double lf) {
+void execDelete(HashEntry *hash, int n, int m, double lf) {
     printf("execDelete: called\n");
 }
 
-void execSearch(char **hash, int n, int m, double lf) {
+void execSearch(HashEntry *hash, int n, int m, double lf) {
     printf("execSearch: called\n");
 }
 
@@ -254,7 +259,7 @@ void testCompHashIdx() {
     assert(compHashIdx(h1(key, m), h2(key, m), i, m) == 3);
 }
 
-void execEdit(char **hash, int n, int m, double lf) {
+void execEdit(HashEntry *hash, int n, int m, double lf) {
     printf("execEdit: called\n");
 }
 
@@ -264,18 +269,18 @@ int main(int argc, char **argv) {
     double lf;
     int m;
     char resp;
-    char **hash;
+    HashEntry *hash;
     testCheckPrime();
     testStrToNum();
     testCompHashIdx();
-    printMode(mode);
+    // printMode(mode);
     n = readN();
-    printf("main: n: %d\n", n);
+    // printf("main: n: %d\n", n);
     lf = readLf();
-    printf("main: lf: %lf\n", lf);
+    // printf("main: lf: %lf\n", lf);
     m = compM(n, lf);
-    printf("main: m: %d\n", m);
-    hash = calloc(m, sizeof(char *));
+    // printf("main: m: %d\n", m);
+    hash = calloc(m, sizeof(HashEntry));
     if (hash == NULL) {
         printf("main: malloc failed\n");
         exit(EXIT_FAILURE);
@@ -284,10 +289,11 @@ int main(int argc, char **argv) {
         int opId;
         printf(
             "\n\t1. Ekleme\n\t2. Silme\n\t3. Arama\n\t4. Düzenle\n\t5. "
+            "Göster\n\t6. "
             "Çıkış\n\n");
         printf("İşlem: ");
         scanf(" %c", &resp);
-        printf("main: resp: %c\n", resp);
+        // printf("main: resp: %c\n", resp);
         opId = resp - '0';
         if (opId == 1) {
             execAdd(hash, n, m, lf);
@@ -297,10 +303,12 @@ int main(int argc, char **argv) {
             execSearch(hash, n, m, lf);
         } else if (opId == 4) {
             execEdit(hash, n, m, lf);
-        } else if (opId != 5) {
+        } else if (opId == 5) {
+            printHash(hash, m);
+        } else if (opId != 6) {
             printf("Geçersiz operasyon, yeniden deneyin\n");
         }
-    } while (resp != '5');
+    } while (resp != '6');
     freeHash(hash, m);
     return 0;
 }
