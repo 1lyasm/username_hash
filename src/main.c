@@ -363,9 +363,20 @@ HashEntry *edit(HashEntry *hash, int n, int m, double lf, Mode mode) {
         exit(EXIT_FAILURE);
     }
     for (i = 0; i < m; ++i) {
+        if (mode == Debug && hash[i].deleted == 1) {
+            printf("%s elemanı eski tabloda silinmişti\n", hash[i].userName);
+        }
         if (hash[i].userName != 0 && hash[i].deleted == 0) {
-            add(newHash, n, m, lf, hash[i].userName, strlen(hash[i].userName),
-                0, mode);
+            int newIdx = add(newHash, n, m, lf, hash[i].userName,
+                             strlen(hash[i].userName), 0, mode);
+            if (mode == Debug) {
+                printf("%s elemanı eski tabloda silinmemişti",
+                       hash[i].userName);
+
+                printf(
+                    ", eski tablodaki adresi: %d, yeni tablodaki adresi: %d\n",
+                    i, newIdx);
+            }
         }
     }
     printf("Yeni hash tablosu:\n");
