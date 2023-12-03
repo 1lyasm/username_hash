@@ -41,6 +41,13 @@ void printMode(Mode mode) {
     printf("printMode: Mode: %s\n", asStr);
 }
 
+/*
+ @brief Converts a string to Mode enum
+
+ @param str Input string that will be converted to Mode
+
+ @return a Mode enum corresponding to given string
+*/
 Mode strToMode(char *str) {
     Mode mode;
     if (strcmp(str, "NORMAL") == 0) {
@@ -53,6 +60,14 @@ Mode strToMode(char *str) {
     return mode;
 }
 
+/*
+ @brief Given a string, converts it to a Mode enum
+    and checks if it is a valid mode
+
+ @param modeArg String containing description of a mode
+
+ @return a Mode enum corresponding to given string
+*/
 Mode parseMode(char *modeArg) {
     char *modes[N_MODE] = {"NORMAL", "DEBUG"};
     int i;
@@ -71,6 +86,14 @@ Mode parseMode(char *modeArg) {
     return mode;
 }
 
+/*
+ @brief Parses program arguments and returns a running mode
+
+ @param argc Number of arguments
+ @param argv String array containing program arguments
+
+ @return Program running mode
+*/
 Mode parseArgs(int argc, char **argv) {
     char *modeArg;
     if (argc != 2) {
@@ -81,6 +104,11 @@ Mode parseArgs(int argc, char **argv) {
     return parseMode(modeArg);
 }
 
+/*
+ @brief Reads n parameter from stdin
+
+ @return N value taken from command line
+*/
 int readN() {
     int n = 0;
     printf("N değerini giriniz: ");
@@ -88,6 +116,11 @@ int readN() {
     return n;
 }
 
+/*
+ @brief Reads load factor parameter from stdin
+
+ @return Load factor
+*/
 double readLf() {
     double lf;
     printf("Load factor değerini giriniz: ");
@@ -95,6 +128,13 @@ double readLf() {
     return lf;
 }
 
+/*
+ @brief Checks if a given number is prime
+
+ @param num Number to be checked
+
+ @return 1 if number is prime, 0 if it is not
+*/
 int checkPrime(int num) {
     int i;
     int isPrime = 1;
@@ -109,6 +149,15 @@ int checkPrime(int num) {
     return isPrime;
 }
 
+/*
+ @brief Computes m value given n and load
+    based on homework specs
+
+ @param n Number of elements
+ @param lf Load factor
+
+ @return m value to be used in hashing
+*/
 int compM(int n, double lf) {
     int quotient = (int)ceil(n / lf);
     int m;
@@ -121,6 +170,11 @@ int compM(int n, double lf) {
     return m;
 }
 
+/*
+ @brief Tests checkPrime function
+
+ @return
+*/
 void testCheckPrime() {
     assert(checkPrime(2) == 1);
     assert(checkPrime(3) == 1);
@@ -134,6 +188,15 @@ void testCheckPrime() {
     assert(checkPrime(189) == 0);
 }
 
+/*
+ @brief Converts a string to number key based on homework specs
+    using Horner's rule
+
+ @param str String to be converted
+ @param unameLen Number of chars in the string
+
+ @return Converted number key for the string
+*/
 int strToNum(char *str, int unameLen) {
     double num = 0;
     int i;
@@ -151,17 +214,52 @@ int strToNum(char *str, int unameLen) {
     return (int)num;
 }
 
+/*
+ @brief Computes output h1 function given in homework specs
+
+ @param key Key to be used in hashing
+ @param m Number of cells in hash table
+
+ @return Output of h1 function
+*/
 int h1(int key, int m) { return key % m; }
 
+/*
+ @brief Computes output h2 function given in homework specs
+
+ @param key Key to be used in hashing
+ @param m Number of cells in hash table
+
+ @return Output of h2 function
+*/
 int h2(int key, int m) {
     int m2 = m - 2;
     return 1 + (key % m2);
 }
 
+/*
+ @brief Computes index in the hash table based on h1 value,
+    h2 value, index i, and m value
+
+ @param h1Val Output of h1 function
+ @param h2Val Output of h2 function
+ @param i Current iteration counter that is used in hashing functions
+ @param m Number of cells in hash table
+
+ @return Computed index in the hash table
+*/
 int compHashIdx(int h1Val, int h2Val, int i, int m) {
     return (h1Val + i * h2Val) % m;
 }
 
+/*
+ @brief Prints the given hash table
+
+ @param hash Hash table
+ @param m Number of cells in hash table
+
+ @return
+*/
 void printHash(HashEntry *hash, int m) {
     int i;
     printf("\nHash tablosu:\n");
@@ -175,6 +273,14 @@ void printHash(HashEntry *hash, int m) {
     }
 }
 
+/*
+ @brief Frees the hash table and its substructures
+
+ @param hash Hash table
+ @param m Number of cells in hash table
+
+ @return
+*/
 void freeHash(HashEntry *hash, int m) {
     int i;
     for (i = 0; i < m; ++i) {
@@ -183,6 +289,21 @@ void freeHash(HashEntry *hash, int m) {
     free(hash);
 }
 
+/*
+ @brief Adds a username to the hash table based on homework specs
+
+ @param hash Hash table
+ @param n Number of original elements
+ @param m Number of cells in hash table
+ @param lf Load factor
+ @param uname Username to be added
+ @param unameLen Length of username to be added
+ @param shouldPrintHash Flag representing whether hash table should
+    be printed after adding
+ @param mode Program running mode
+
+ @return Index of the newly added element, -1 if could not add
+*/
 int add(HashEntry *hash, int n, int m, double lf, char *uname, int unameLen,
         int shouldPrintHash, Mode mode) {
     int key;
@@ -245,6 +366,18 @@ int add(HashEntry *hash, int n, int m, double lf, char *uname, int unameLen,
     return hashIdx;
 }
 
+/*
+ @brief Takes a username from stdin and deletes it from the
+    hash table if possible
+
+ @param hash Hash table
+ @param n Number of original elements
+ @param m Number of cells in hash table
+ @param lf Load factor
+ @param mode Program running mode
+
+ @return
+*/
 void delete(HashEntry *hash, int n, int m, double lf, Mode mode) {
     int unameLen;
     char *uname = calloc(MAX_UNAME_BUF_LEN, sizeof(char));
@@ -293,6 +426,18 @@ void delete(HashEntry *hash, int n, int m, double lf, Mode mode) {
     free(uname);
 }
 
+/*
+ @brief Takes a username from stdin and finds it in the
+    hash table if possible
+
+ @param hash Hash table
+ @param n Number of original elements
+ @param m Number of cells in hash table
+ @param lf Load factor
+ @param mode Program running mode
+
+ @return
+*/
 void search(HashEntry *hash, int n, int m, double lf, Mode mode) {
     int key;
     int h1Val;
@@ -338,6 +483,11 @@ void search(HashEntry *hash, int n, int m, double lf, Mode mode) {
     free(uname);
 }
 
+/*
+ @brief Tests strToNum function
+
+ @return
+*/
 void testStrToNum() {
     char str[] = "tommy";
     int len = strlen(str);
@@ -346,6 +496,11 @@ void testStrToNum() {
     assert(num == 8135);
 }
 
+/*
+ @brief Tests compHashIdx function
+
+ @return
+*/
 void testCompHashIdx() {
     int key, i, m;
     key = 39782;
@@ -358,6 +513,18 @@ void testCompHashIdx() {
     assert(compHashIdx(h1(key, m), h2(key, m), i, m) == 3);
 }
 
+/*
+ @brief Edits the hash table by moving undeleted elements from
+    old hash table to a new hash table based on homework specs
+
+ @param hash Hash table
+ @param n Number of original elements
+ @param m Number of cells in hash table
+ @param lf Load factor
+ @param mode Program running mode
+
+ @return New hash table
+*/
 HashEntry *edit(HashEntry *hash, int n, int m, double lf, Mode mode) {
     int i;
     HashEntry *newHash = calloc(m, sizeof(HashEntry));
@@ -388,6 +555,15 @@ HashEntry *edit(HashEntry *hash, int n, int m, double lf, Mode mode) {
     return newHash;
 }
 
+/*
+ @brief Main function that runs CLI and corresponding hashing
+    functions based on user input and displays results
+
+ @param argc Argument count
+ @param argv Arguments
+
+ @return Program exit status
+*/
 int main(int argc, char **argv) {
     Mode mode = parseArgs(argc, argv);
     int n;
