@@ -20,8 +20,8 @@
 typedef enum { Normal, Debug, Error } Mode;
 
 typedef struct {
-    char *userName;
-    int deleted;
+  char *userName;
+  int deleted;
 } HashEntry;
 
 /*
@@ -32,13 +32,13 @@ typedef struct {
  @return
 */
 void printMode(Mode mode) {
-    char *asStr = "error";
-    if (mode == Normal) {
-        asStr = "normal";
-    } else if (mode == Debug) {
-        asStr = "debug";
-    }
-    printf("printMode: Mode: %s\n", asStr);
+  char *asStr = "error";
+  if (mode == Normal) {
+    asStr = "normal";
+  } else if (mode == Debug) {
+    asStr = "debug";
+  }
+  printf("printMode: Mode: %s\n", asStr);
 }
 
 /*
@@ -49,15 +49,15 @@ void printMode(Mode mode) {
  @return a Mode enum corresponding to given string
 */
 Mode strToMode(char *str) {
-    Mode mode;
-    if (strcmp(str, "NORMAL") == 0) {
-        mode = Normal;
-    } else if (strcmp(str, "DEBUG") == 0) {
-        mode = Debug;
-    } else {
-        mode = Error;
-    }
-    return mode;
+  Mode mode;
+  if (strcmp(str, "NORMAL") == 0) {
+    mode = Normal;
+  } else if (strcmp(str, "DEBUG") == 0) {
+    mode = Debug;
+  } else {
+    mode = Error;
+  }
+  return mode;
 }
 
 /*
@@ -69,21 +69,21 @@ Mode strToMode(char *str) {
  @return a Mode enum corresponding to given string
 */
 Mode parseMode(char *modeArg) {
-    char *modes[N_MODE] = {"NORMAL", "DEBUG"};
-    int i;
-    int isValid = 0;
-    Mode mode;
-    for (i = 0; i < N_MODE && isValid == 0; ++i) {
-        if (strcmp(modes[i], modeArg) != 0) {
-            isValid = 1;
-            mode = strToMode(modeArg);
-        }
+  char *modes[N_MODE] = {"NORMAL", "DEBUG"};
+  int i;
+  int isValid = 0;
+  Mode mode;
+  for (i = 0; i < N_MODE && isValid == 0; ++i) {
+    if (strcmp(modes[i], modeArg) != 0) {
+      isValid = 1;
+      mode = strToMode(modeArg);
     }
-    if (isValid == 0) {
-        printf("Parametre NORMAL ve ya DEBUG değil\n");
-        exit(EXIT_FAILURE);
-    }
-    return mode;
+  }
+  if (isValid == 0) {
+    printf("Parameter is not NORMAL or DEBUG\n");
+    exit(EXIT_FAILURE);
+  }
+  return mode;
 }
 
 /*
@@ -95,13 +95,13 @@ Mode parseMode(char *modeArg) {
  @return Program running mode
 */
 Mode parseArgs(int argc, char **argv) {
-    char *modeArg;
-    if (argc != 2) {
-        printf("Program için 1 parametre gerekli: NORMAL ve ya DEBUG\n");
-        exit(EXIT_FAILURE);
-    }
-    modeArg = argv[1];
-    return parseMode(modeArg);
+  char *modeArg;
+  if (argc != 2) {
+    printf("Program needs 1 parameter: NORMAL or DEBUG\n");
+    exit(EXIT_FAILURE);
+  }
+  modeArg = argv[1];
+  return parseMode(modeArg);
 }
 
 /*
@@ -110,10 +110,10 @@ Mode parseArgs(int argc, char **argv) {
  @return N value taken from command line
 */
 int readN() {
-    int n = 0;
-    printf("N değerini giriniz: ");
-    scanf(" %d", &n);
-    return n;
+  int n = 0;
+  printf("Enter n: ");
+  scanf(" %d", &n);
+  return n;
 }
 
 /*
@@ -122,10 +122,10 @@ int readN() {
  @return Load factor
 */
 double readLf() {
-    double lf;
-    printf("Load factor değerini giriniz: ");
-    scanf(" %lf", &lf);
-    return lf;
+  double lf;
+  printf("Enter load factor: ");
+  scanf(" %lf", &lf);
+  return lf;
 }
 
 /*
@@ -136,17 +136,17 @@ double readLf() {
  @return 1 if number is prime, 0 if it is not
 */
 int checkPrime(int num) {
-    int i;
-    int isPrime = 1;
-    if (num <= 3) {
-        return 1;
+  int i;
+  int isPrime = 1;
+  if (num <= 3) {
+    return 1;
+  }
+  for (i = 2; i * i <= num && isPrime == 1; ++i) {
+    if (num % i == 0) {
+      isPrime = 0;
     }
-    for (i = 2; i * i <= num && isPrime == 1; ++i) {
-        if (num % i == 0) {
-            isPrime = 0;
-        }
-    }
-    return isPrime;
+  }
+  return isPrime;
 }
 
 /*
@@ -159,15 +159,15 @@ int checkPrime(int num) {
  @return m value to be used in hashing
 */
 int compM(int n, double lf) {
-    int quotient = (int)ceil(n / lf);
-    int m;
-    int isPrime = 0;
-    m = quotient - 1;
-    while (isPrime == 0) {
-        ++m;
-        isPrime = checkPrime(m);
-    }
-    return m;
+  int quotient = (int)ceil(n / lf);
+  int m;
+  int isPrime = 0;
+  m = quotient - 1;
+  while (isPrime == 0) {
+    ++m;
+    isPrime = checkPrime(m);
+  }
+  return m;
 }
 
 /*
@@ -176,16 +176,16 @@ int compM(int n, double lf) {
  @return
 */
 void testCheckPrime() {
-    assert(checkPrime(2) == 1);
-    assert(checkPrime(3) == 1);
-    assert(checkPrime(4) == 0);
-    assert(checkPrime(5) == 1);
-    assert(checkPrime(6) == 0);
-    assert(checkPrime(7) == 1);
-    assert(checkPrime(25) == 0);
-    assert(checkPrime(26) == 0);
-    assert(checkPrime(97) == 1);
-    assert(checkPrime(189) == 0);
+  assert(checkPrime(2) == 1);
+  assert(checkPrime(3) == 1);
+  assert(checkPrime(4) == 0);
+  assert(checkPrime(5) == 1);
+  assert(checkPrime(6) == 0);
+  assert(checkPrime(7) == 1);
+  assert(checkPrime(25) == 0);
+  assert(checkPrime(26) == 0);
+  assert(checkPrime(97) == 1);
+  assert(checkPrime(189) == 0);
 }
 
 /*
@@ -198,20 +198,20 @@ void testCheckPrime() {
  @return Converted number key for the string
 */
 int strToNum(char *str, int unameLen) {
-    double num = 0;
-    int i;
-    int r = 3;
-    for (i = 0; i < unameLen; ++i) {
-        int power = unameLen - i - 1;
-        double powerRes = pow(r, power);
-        int charVal;
-        charVal = str[i] - '0' + 1;
-        num = num + powerRes * charVal;
-    }
-    while (num > INT_MAX) {
-        num -= INT_MAX;
-    }
-    return (int)num;
+  double num = 0;
+  int i;
+  int r = 3;
+  for (i = 0; i < unameLen; ++i) {
+    int power = unameLen - i - 1;
+    double powerRes = pow(r, power);
+    int charVal;
+    charVal = str[i] - '0' + 1;
+    num = num + powerRes * charVal;
+  }
+  while (num > INT_MAX) {
+    num -= INT_MAX;
+  }
+  return (int)num;
 }
 
 /*
@@ -233,8 +233,8 @@ int h1(int key, int m) { return key % m; }
  @return Output of h2 function
 */
 int h2(int key, int m) {
-    int m2 = m - 2;
-    return 1 + (key % m2);
+  int m2 = m - 2;
+  return 1 + (key % m2);
 }
 
 /*
@@ -249,7 +249,7 @@ int h2(int key, int m) {
  @return Computed index in the hash table
 */
 int compHashIdx(int h1Val, int h2Val, int i, int m) {
-    return (h1Val + i * h2Val) % m;
+  return (h1Val + i * h2Val) % m;
 }
 
 /*
@@ -261,16 +261,15 @@ int compHashIdx(int h1Val, int h2Val, int i, int m) {
  @return
 */
 void printHash(HashEntry *hash, int m) {
-    int i;
-    printf("\nHash tablosu:\n");
-    for (i = 0; i < m; ++i) {
-        if (hash[i].userName != 0) {
-            printf("\t%d:\t%s (deleted: %d)\n", i, hash[i].userName,
-                   hash[i].deleted);
-        } else {
-            printf("\t%d:\t(null)\n", i);
-        }
+  int i;
+  printf("\nHash table:\n");
+  for (i = 0; i < m; ++i) {
+    if (hash[i].userName != 0) {
+      printf("\t%d:\t%s (deleted: %d)\n", i, hash[i].userName, hash[i].deleted);
+    } else {
+      printf("\t%d:\t(null)\n", i);
     }
+  }
 }
 
 /*
@@ -282,11 +281,11 @@ void printHash(HashEntry *hash, int m) {
  @return
 */
 void freeHash(HashEntry *hash, int m) {
-    int i;
-    for (i = 0; i < m; ++i) {
-        free(hash[i].userName);
-    }
-    free(hash);
+  int i;
+  for (i = 0; i < m; ++i) {
+    free(hash[i].userName);
+  }
+  free(hash);
 }
 
 /*
@@ -306,64 +305,64 @@ void freeHash(HashEntry *hash, int m) {
 */
 int add(HashEntry *hash, int n, int m, double lf, char *uname, int unameLen,
         int shouldPrintHash, Mode mode) {
-    int key;
-    int i = 0;
-    int inserted = 0;
-    int hashIdx;
-    int h1Val;
-    int h2Val;
-    int exists = 0;
-    key = strToNum(uname, unameLen);
-    h1Val = h1(key, m);
-    h2Val = h2(key, m);
-    if (mode == Debug) {
-        printf("h1(\"%s\") = %d\n", uname, h1Val);
-        printf("h2(\"%s\") = %d\n", uname, h2Val);
+  int key;
+  int i = 0;
+  int inserted = 0;
+  int hashIdx;
+  int h1Val;
+  int h2Val;
+  int exists = 0;
+  key = strToNum(uname, unameLen);
+  h1Val = h1(key, m);
+  h2Val = h2(key, m);
+  if (mode == Debug) {
+    printf("h1(\"%s\") = %d\n", uname, h1Val);
+    printf("h2(\"%s\") = %d\n", uname, h2Val);
+  }
+  while (inserted == 0 && exists == 0 && i < m) {
+    hashIdx = compHashIdx(h1Val, h2Val, i, m);
+    if (hash[hashIdx].userName == 0) {
+      hash[hashIdx].userName = malloc((unameLen + 1) * sizeof(char));
+      if (hash[hashIdx].userName == NULL) {
+        printf("add: malloc failed\n");
+        exit(EXIT_FAILURE);
+      }
+      strcpy(hash[hashIdx].userName, uname);
+      inserted = 1;
+    } else if (strcmp(hash[hashIdx].userName, uname) == 0) {
+      exists = 1;
     }
-    while (inserted == 0 && exists == 0 && i < m) {
-        hashIdx = compHashIdx(h1Val, h2Val, i, m);
-        if (hash[hashIdx].userName == 0) {
-            hash[hashIdx].userName = malloc((unameLen + 1) * sizeof(char));
-            if (hash[hashIdx].userName == NULL) {
-                printf("add: malloc failed\n");
-                exit(EXIT_FAILURE);
-            }
-            strcpy(hash[hashIdx].userName, uname);
-            inserted = 1;
-        } else if (strcmp(hash[hashIdx].userName, uname) == 0) {
-            exists = 1;
-        }
-        if (hash[hashIdx].deleted == 1 &&
-            strcmp(hash[hashIdx].userName, uname) == 0) {
-            hash[hashIdx].deleted = 0;
-            inserted = 1;
-        }
-        if (inserted == 0 && exists == 0 && mode == Debug) {
-            printf("%s kelimesi %d. adrese yerleştirilemedi\n", uname, hashIdx);
-        }
-        ++i;
+    if (hash[hashIdx].deleted == 1 &&
+        strcmp(hash[hashIdx].userName, uname) == 0) {
+      hash[hashIdx].deleted = 0;
+      inserted = 1;
     }
-    if (inserted == 1) {
-        printf("Elemanınız (%s) %d. adrese yerleştirildi.\n", uname, hashIdx);
-        if (shouldPrintHash) {
-            printHash(hash, m);
-        }
-    } else if (exists == 1) {
-        printf(
-            "Eleman (%s) tabloda mevcut olduğu için ekleme işlemi yapılmadı\n",
-            uname);
-        if (shouldPrintHash) {
-            printHash(hash, m);
-        }
-        printHash(hash, m);
-        hashIdx = -1;
-    } else {
-        printf("Tablo dolu olduğu için %s elemanı tabloya yerleştirilemedi.\n",
-               uname);
-        printHash(hash, m);
-        hashIdx = -1;
+    if (inserted == 0 && exists == 0 && mode == Debug) {
+      printf("Word %s could not be placed into address %d\n", uname, hashIdx);
     }
-    return hashIdx;
+    ++i;
+  }
+  if (inserted == 1) {
+    printf("Item (%s) was placed into address %d\n", uname, hashIdx);
+    if (shouldPrintHash) {
+      printHash(hash, m);
+    }
+  } else if (exists == 1) {
+    printf("Because item (%s) is in table, add operation could not be "
+           "performed\n",
+           uname);
+    if (shouldPrintHash) {
+      printHash(hash, m);
+    }
+    printHash(hash, m);
+    hashIdx = -1;
+  } else {
+    printf("As the table is full, item %s could not be placed into the table\n",
+           uname);
+    printHash(hash, m);
+    hashIdx = -1;
+  }
+  return hashIdx;
 }
 
 /*
@@ -379,51 +378,51 @@ int add(HashEntry *hash, int n, int m, double lf, char *uname, int unameLen,
  @return
 */
 void delete(HashEntry *hash, int n, int m, double lf, Mode mode) {
-    int unameLen;
-    char *uname = calloc(MAX_UNAME_BUF_LEN, sizeof(char));
-    int h1Val;
-    int h2Val;
-    int deleted = 0;
-    int i = 0;
-    int hashIdx = 0;
-    int key;
-    if (uname == NULL) {
-        printf("delete: calloc failed\n");
-        exit(EXIT_FAILURE);
+  int unameLen;
+  char *uname = calloc(MAX_UNAME_BUF_LEN, sizeof(char));
+  int h1Val;
+  int h2Val;
+  int deleted = 0;
+  int i = 0;
+  int hashIdx = 0;
+  int key;
+  if (uname == NULL) {
+    printf("delete: calloc failed\n");
+    exit(EXIT_FAILURE);
+  }
+  printf("Enter name of the user to be deleted: ");
+  scanf(" %s", uname);
+  unameLen = strlen(uname);
+  if (unameLen >= MAX_UNAME_LEN) {
+    uname[MAX_UNAME_LEN] = 0;
+    unameLen = MAX_UNAME_LEN;
+  }
+  key = strToNum(uname, unameLen);
+  h1Val = h1(key, m);
+  h2Val = h2(key, m);
+  if (mode == Debug) {
+    printf("h1(\"%s\") = %d\n", uname, h1Val);
+    printf("h2(\"%s\") = %d\n", uname, h2Val);
+  }
+  while (deleted == 0 && i < m) {
+    hashIdx = compHashIdx(h1Val, h2Val, i, m);
+    if (hash[hashIdx].userName != 0 && hash[hashIdx].deleted == 0 &&
+        strcmp(uname, hash[hashIdx].userName) == 0) {
+      hash[hashIdx].deleted = 1;
+      deleted = 1;
+    } else if (mode == Debug) {
+      printf("Word %s could not be deleted from address %d\n", uname, hashIdx);
     }
-    printf("Silinmesi istediğiniz kullanıcının adının giriniz: ");
-    scanf(" %s", uname);
-    unameLen = strlen(uname);
-    if (unameLen >= MAX_UNAME_LEN) {
-        uname[MAX_UNAME_LEN] = 0;
-        unameLen = MAX_UNAME_LEN;
-    }
-    key = strToNum(uname, unameLen);
-    h1Val = h1(key, m);
-    h2Val = h2(key, m);
-    if (mode == Debug) {
-        printf("h1(\"%s\") = %d\n", uname, h1Val);
-        printf("h2(\"%s\") = %d\n", uname, h2Val);
-    }
-    while (deleted == 0 && i < m) {
-        hashIdx = compHashIdx(h1Val, h2Val, i, m);
-        if (hash[hashIdx].userName != 0 && hash[hashIdx].deleted == 0 &&
-            strcmp(uname, hash[hashIdx].userName) == 0) {
-            hash[hashIdx].deleted = 1;
-            deleted = 1;
-        } else if (mode == Debug) {
-            printf("%s kelimesi %d. adresten silinemedi\n", uname, hashIdx);
-        }
-        ++i;
-    }
-    if (deleted == 1) {
-        printf("%d adresindeki %s elemanı silindi.\n", hashIdx, uname);
-        printHash(hash, m);
-    } else {
-        printf("%s elemanı tabloda bulunmuyor\n", uname);
-        printHash(hash, m);
-    }
-    free(uname);
+    ++i;
+  }
+  if (deleted == 1) {
+    printf("Item %s in address %d was deleted\n", uname, hashIdx);
+    printHash(hash, m);
+  } else {
+    printf("Item %s is not in table\n", uname);
+    printHash(hash, m);
+  }
+  free(uname);
 }
 
 /*
@@ -439,48 +438,48 @@ void delete(HashEntry *hash, int n, int m, double lf, Mode mode) {
  @return
 */
 void search(HashEntry *hash, int n, int m, double lf, Mode mode) {
-    int key;
-    int h1Val;
-    int h2Val;
-    int found = 0;
-    int i = 0;
-    int unameLen;
-    int hashIdx;
-    char *uname = calloc(MAX_UNAME_BUF_LEN, sizeof(char));
-    if (uname == NULL) {
-        printf("search: calloc failed\n");
-        exit(EXIT_FAILURE);
+  int key;
+  int h1Val;
+  int h2Val;
+  int found = 0;
+  int i = 0;
+  int unameLen;
+  int hashIdx;
+  char *uname = calloc(MAX_UNAME_BUF_LEN, sizeof(char));
+  if (uname == NULL) {
+    printf("search: calloc failed\n");
+    exit(EXIT_FAILURE);
+  }
+  printf("Enter name of the user to be searched: ");
+  scanf(" %s", uname);
+  unameLen = strlen(uname);
+  if (unameLen >= MAX_UNAME_LEN) {
+    uname[MAX_UNAME_LEN] = 0;
+    unameLen = MAX_UNAME_LEN;
+  }
+  key = strToNum(uname, unameLen);
+  h1Val = h1(key, m);
+  h2Val = h2(key, m);
+  if (mode == Debug) {
+    printf("h1(\"%s\") = %d\n", uname, h1Val);
+    printf("h2(\"%s\") = %d\n", uname, h2Val);
+  }
+  while (found == 0 && i < m) {
+    hashIdx = compHashIdx(h1Val, h2Val, i, m);
+    if (hash[hashIdx].userName != 0 && hash[hashIdx].deleted == 0 &&
+        strcmp(hash[hashIdx].userName, uname) == 0) {
+      found = 1;
+    } else if (mode == Debug) {
+      printf("Word %s could not be found in address %d\n", uname, hashIdx);
     }
-    printf("Aramak istediğiniz kullanıcıyı giriniz: ");
-    scanf(" %s", uname);
-    unameLen = strlen(uname);
-    if (unameLen >= MAX_UNAME_LEN) {
-        uname[MAX_UNAME_LEN] = 0;
-        unameLen = MAX_UNAME_LEN;
-    }
-    key = strToNum(uname, unameLen);
-    h1Val = h1(key, m);
-    h2Val = h2(key, m);
-    if (mode == Debug) {
-        printf("h1(\"%s\") = %d\n", uname, h1Val);
-        printf("h2(\"%s\") = %d\n", uname, h2Val);
-    }
-    while (found == 0 && i < m) {
-        hashIdx = compHashIdx(h1Val, h2Val, i, m);
-        if (hash[hashIdx].userName != 0 && hash[hashIdx].deleted == 0 &&
-            strcmp(hash[hashIdx].userName, uname) == 0) {
-            found = 1;
-        } else if (mode == Debug) {
-            printf("%s kelimesi %d. adreste bulunamadı.\n", uname, hashIdx);
-        }
-        ++i;
-    }
-    if (found == 1) {
-        printf("%s elemanı %d adresinde bulunmaktadır.\n", uname, hashIdx);
-    } else {
-        printf("%s elemanı tabloda bulunamadı.\n", uname);
-    }
-    free(uname);
+    ++i;
+  }
+  if (found == 1) {
+    printf("Item %s is in address %d\n", uname, hashIdx);
+  } else {
+    printf("Item %s is not in the table\n", uname);
+  }
+  free(uname);
 }
 
 /*
@@ -489,11 +488,11 @@ void search(HashEntry *hash, int n, int m, double lf, Mode mode) {
  @return
 */
 void testStrToNum() {
-    char str[] = "tommy";
-    int len = strlen(str);
-    int num;
-    num = strToNum(str, len);
-    assert(num == 8135);
+  char str[] = "tommy";
+  int len = strlen(str);
+  int num;
+  num = strToNum(str, len);
+  assert(num == 8135);
 }
 
 /*
@@ -502,15 +501,15 @@ void testStrToNum() {
  @return
 */
 void testCompHashIdx() {
-    int key, i, m;
-    key = 39782;
-    i = 0;
-    m = 5;
-    assert(compHashIdx(h1(key, m), h2(key, m), i, m) == 2);
-    i = 1;
-    assert(compHashIdx(h1(key, m), h2(key, m), i, m) == 0);
-    i = 2;
-    assert(compHashIdx(h1(key, m), h2(key, m), i, m) == 3);
+  int key, i, m;
+  key = 39782;
+  i = 0;
+  m = 5;
+  assert(compHashIdx(h1(key, m), h2(key, m), i, m) == 2);
+  i = 1;
+  assert(compHashIdx(h1(key, m), h2(key, m), i, m) == 0);
+  i = 2;
+  assert(compHashIdx(h1(key, m), h2(key, m), i, m) == 3);
 }
 
 /*
@@ -526,33 +525,31 @@ void testCompHashIdx() {
  @return New hash table
 */
 HashEntry *edit(HashEntry *hash, int n, int m, double lf, Mode mode) {
-    int i;
-    HashEntry *newHash = calloc(m, sizeof(HashEntry));
-    if (newHash == NULL) {
-        printf("edit: calloc failed\n");
-        exit(EXIT_FAILURE);
+  int i;
+  HashEntry *newHash = calloc(m, sizeof(HashEntry));
+  if (newHash == NULL) {
+    printf("edit: calloc failed\n");
+    exit(EXIT_FAILURE);
+  }
+  for (i = 0; i < m; ++i) {
+    if (mode == Debug && hash[i].deleted == 1) {
+      printf("Item %s was marked as deleted in the old table\n", hash[i].userName);
     }
-    for (i = 0; i < m; ++i) {
-        if (mode == Debug && hash[i].deleted == 1) {
-            printf("%s elemanı eski tabloda silinmişti\n", hash[i].userName);
-        }
-        if (hash[i].userName != 0 && hash[i].deleted == 0) {
-            int newIdx = add(newHash, n, m, lf, hash[i].userName,
-                             strlen(hash[i].userName), 0, mode);
-            if (mode == Debug) {
-                printf("%s elemanı eski tabloda silinmemişti",
-                       hash[i].userName);
+    if (hash[i].userName != 0 && hash[i].deleted == 0) {
+      int newIdx = add(newHash, n, m, lf, hash[i].userName,
+                       strlen(hash[i].userName), 0, mode);
+      if (mode == Debug) {
+        printf("Item %s was not marked as deleted in the old table\n", hash[i].userName);
 
-                printf(
-                    ", eski tablodaki adresi: %d, yeni tablodaki adresi: %d\n",
-                    i, newIdx);
-            }
-        }
+        printf(", address in the old table: %d, address in the new table: %d\n", i,
+               newIdx);
+      }
     }
-    printf("Yeni hash tablosu:\n");
-    printHash(newHash, m);
-    freeHash(hash, m);
-    return newHash;
+  }
+  printf("New hash table:\n");
+  printHash(newHash, m);
+  freeHash(hash, m);
+  return newHash;
 }
 
 /*
@@ -565,60 +562,59 @@ HashEntry *edit(HashEntry *hash, int n, int m, double lf, Mode mode) {
  @return Program exit status
 */
 int main(int argc, char **argv) {
-    Mode mode = parseArgs(argc, argv);
-    int n;
-    double lf;
-    int m;
-    char resp;
-    HashEntry *hash;
-    testCheckPrime();
-    testStrToNum();
-    testCompHashIdx();
-    n = readN();
-    lf = readLf();
-    m = compM(n, lf);
-    hash = calloc(m, sizeof(HashEntry));
-    if (hash == NULL) {
-        printf("main: calloc failed\n");
+  Mode mode = parseArgs(argc, argv);
+  int n;
+  double lf;
+  int m;
+  char resp;
+  HashEntry *hash;
+  testCheckPrime();
+  testStrToNum();
+  testCompHashIdx();
+  n = readN();
+  lf = readLf();
+  m = compM(n, lf);
+  hash = calloc(m, sizeof(HashEntry));
+  if (hash == NULL) {
+    printf("main: calloc failed\n");
+    exit(EXIT_FAILURE);
+  }
+  do {
+    int opId;
+    printf("\n\t1. Insertion\n\t2. Deletion\n\t3. Search\n\t4. Edit\n\t5. "
+           "Print\n\t6. "
+           "Exit\n\n");
+    printf("Choice: ");
+    scanf(" %c", &resp);
+    opId = resp - '0';
+    if (opId == 1) {
+      int unameLen;
+      char *uname = calloc(MAX_UNAME_BUF_LEN, sizeof(char));
+      if (uname == NULL) {
+        printf("add: calloc failed\n");
         exit(EXIT_FAILURE);
+      }
+      printf("Enter new user name: ");
+      scanf(" %s", uname);
+      unameLen = strlen(uname);
+      if (unameLen >= MAX_UNAME_LEN) {
+        uname[MAX_UNAME_LEN] = 0;
+        unameLen = MAX_UNAME_LEN;
+      }
+      add(hash, n, m, lf, uname, unameLen, 1, mode);
+      free(uname);
+    } else if (opId == 2) {
+      delete (hash, n, m, lf, mode);
+    } else if (opId == 3) {
+      search(hash, n, m, lf, mode);
+    } else if (opId == 4) {
+      hash = edit(hash, n, m, lf, mode);
+    } else if (opId == 5) {
+      printHash(hash, m);
+    } else if (opId != 6) {
+      printf("Invalid operation, try again\n");
     }
-    do {
-        int opId;
-        printf(
-            "\n\t1. Ekleme\n\t2. Silme\n\t3. Arama\n\t4. Düzenle\n\t5. "
-            "Göster\n\t6. "
-            "Çıkış\n\n");
-        printf("İşlem: ");
-        scanf(" %c", &resp);
-        opId = resp - '0';
-        if (opId == 1) {
-            int unameLen;
-            char *uname = calloc(MAX_UNAME_BUF_LEN, sizeof(char));
-            if (uname == NULL) {
-                printf("add: calloc failed\n");
-                exit(EXIT_FAILURE);
-            }
-            printf("Yeni kullanıcı adını giriniz: ");
-            scanf(" %s", uname);
-            unameLen = strlen(uname);
-            if (unameLen >= MAX_UNAME_LEN) {
-                uname[MAX_UNAME_LEN] = 0;
-                unameLen = MAX_UNAME_LEN;
-            }
-            add(hash, n, m, lf, uname, unameLen, 1, mode);
-            free(uname);
-        } else if (opId == 2) {
-            delete (hash, n, m, lf, mode);
-        } else if (opId == 3) {
-            search(hash, n, m, lf, mode);
-        } else if (opId == 4) {
-            hash = edit(hash, n, m, lf, mode);
-        } else if (opId == 5) {
-            printHash(hash, m);
-        } else if (opId != 6) {
-            printf("Geçersiz operasyon, yeniden deneyin\n");
-        }
-    } while (resp != '6');
-    freeHash(hash, m);
-    return 0;
+  } while (resp != '6');
+  freeHash(hash, m);
+  return 0;
 }
